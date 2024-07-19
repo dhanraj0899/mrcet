@@ -1,0 +1,59 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt 
+import seaborn as sns
+df=pd.read_csv("C:\\Users\\MRCET\\Desktop\\train.csv")
+df.head(5)
+df.shape
+df.info()
+df.describe()
+df.columns
+df.dtypes
+column_names = df.columns
+for column in column_names:
+    print(column + ' - ' + str(df[column].isnull().sum()))
+df.Survived.value_counts()
+import matplotlib.pyplot as plt
+plt = df.Survived.value_counts().plot.bar(x='Survived or not',y='Passenger Count',rot=0)
+plt = df.Pclass.value_counts().sort_index().plot.bar(x='PClass',y='Survival Probability',rot=0)
+df[['Pclass','Survived']].groupby('Pclass').count()
+df[['Pclass', 'Survived']].groupby('Pclass').mean().Survived.plot.bar(x='PClass',y='Survival Probability',rot=0)
+df.Sex.value_counts().sort_index().plot.bar(x='Sex',y='PassengerCount',rot=0) 
+plt.set_xlabel('Sex')
+plt.set_ylabel('Passenger count')
+df= df.drop(columns=['Ticket', 'PassengerId', 'Cabin'])
+df.head()
+df['Sex'] =df['Sex'].map({'male':0, 'female':1})
+df['Embarked'] = df['Embarked'].map({'C':0, 'Q':1, 'S':2})
+df.head()
+df['Title'] = df.Name.str.extract(' ([A-Za-z]+)\.',expand=False) 
+df = df.drop(columns='Name')
+df.Title.value_counts().plot.bar(x='Title',y=0,rot=0)
+df['Title'] = df['Title'].replace(['Dr', 'Rev', 'Col', 'Major', 'Countess', 'Sir', 'Jonkheer', 'Lady', 'Capt','Don'],'Others')
+df['Title'] = df['Title'].replace('Ms','Miss') 
+df['Title'] = df['Title'].replace('Mme', 'Mrs') 
+df['Title'] = df['Title'].replace('Mlle', 'Miss')
+df.Title.value_counts().sort_index().plot.bar(x='Title',y='Passenger count')
+df[['Title', 'Survived']].groupby('Title').mean().Survived.plot.bar(x='Title',y='Survival Probability')
+df['Title'] = df['Title'].map({'Master':0, 'Miss':1, 'Mr':2, 'Mrs':3, 'Others':4})
+df.head()
+corr_matrix = df.corr()
+import matplotlib.pyplot as plt
+plt.figure(figsize=(9, 8))
+sns.heatmap(data = corr_matrix,cmap='BrBG', annot=True, linewidths=0.2)
+df.isnull().sum()
+df['Embarked'].isnull().sum()
+df['Embarked'] = df['Embarked'].fillna(2)
+df.head()
+corr_matrix = df[['Pclass', 'Sex', 'Age','SibSp', 'Parch', 'Fare']].corr()
+plt.figure(figsize=(7, 6))
+sns.heatmap(data = corr_matrix,cmap='BrBG', annot=True, linewidths=0.2)
+NaN_indexes = df['Age'][df['Age'].isnull()].index
+for i in NaN_indexes:
+    pred_age = df['Age'][((df.SibSp == df.iloc[i]["SibSp"]) & (df.Parch == df.iloc[i]["Parch"]) &(df.Pclass== df.iloc[i]["Pclass"]))].median()
+    if not np.isnan(pred_age):
+        df['Age'].iloc[i] = pred_age
+    else:
+        df['Age'].iloc[i] = df['Age'].median()
+df.isnull().sum()
+df.head(20)
